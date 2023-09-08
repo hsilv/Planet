@@ -1,11 +1,12 @@
 #include "obj.h"
 #include "buffer.h"
 
-bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::vector<vector3> &out_normals)
+bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::vector<vector3> &out_normals, std::vector<vector3> &out_text)
 {
     out_vertices.clear();
     int counterV = 0;
     int counterF = 0;
+    int counterT = 1;
     int counterN = 1;
 
     File obj = SD.open(path.c_str());
@@ -42,6 +43,10 @@ bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::v
             {
                 counterN++;
             }
+            else if (strcmp(type, "vt") == 0)
+            {
+                counterT++;
+            }
         }
     }
 
@@ -55,12 +60,15 @@ bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::v
     {
         out_vertices.reserve(counterF * 3 /* * 2 */);
         out_normals.reserve(counterF * 3);
+        out_text.reserve(counterF * 3);
         obj.seek(0);
 
         std::vector<vector3> temp_vertices;
         temp_vertices.reserve(counterV);
         std::vector<vector3> temp_normals;
         temp_normals.reserve(counterN);
+        std::vector<vector3> temp_text;
+        temp_text.reserve(counterT);
 
         while (obj.available())
         {
@@ -93,6 +101,15 @@ bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::v
                         temp_normals.push_back(temp);
                     }
                 }
+                else if (strcmp(type, "vt") == 0)
+                {
+                    double x, y;
+                    if (sscanf(buffer, "vt %lf %lf", &x, &y) == 2)
+                    {
+                        vector3 temp(x, y, 0);
+                        temp_text.push_back(temp);
+                    }
+                }
                 else if (strcmp(type, "f") == 0)
                 {
                     std::array<int, 3> face_indices;
@@ -107,10 +124,13 @@ bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::v
                             face_indices3[i] -= 1;
                         }
                         out_vertices.push_back(temp_vertices.at(face_indices[0]));
+                        out_text.push_back(temp_text.at(face_indices[1]));
                         out_normals.push_back(temp_normals.at(face_indices[2]));
                         out_vertices.push_back(temp_vertices.at(face_indices2[0]));
+                        out_text.push_back(temp_text.at(face_indices2[1]));
                         out_normals.push_back(temp_normals.at(face_indices2[2]));
                         out_vertices.push_back(temp_vertices.at(face_indices3[0]));
+                        out_text.push_back(temp_text.at(face_indices3[1]));
                         out_normals.push_back(temp_normals.at(face_indices3[2]));
                     }
                 }

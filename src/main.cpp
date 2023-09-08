@@ -10,6 +10,7 @@
 std::vector<vector3> vertexes;
 Uniforms uniform;
 std::vector<vector3> normals;
+std::vector<vector3> originals;
 
 float angle = 3.14f / 3.0f;
 int wWidth = 0;
@@ -22,7 +23,7 @@ void setup()
   tft.println("Leyendo tarjeta SD...");
   setupSD();
   tft.printf("Memoria libre: %i \n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-  loadOBJ("/sphere.obj", vertexes, normals);
+  loadOBJ("/sphere.obj", vertexes, normals, originals);
   tft.printf("Memoria libre: %i \n", heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
   wWidth = tft.width();
   wHeight = tft.height();
@@ -30,10 +31,10 @@ void setup()
 
 void loop()
 {
-  uniform.model = createModelMatrix(vector3(0.0f, 0.0f, 0.0f), vector3(0.75f, 0.5f, 0.5f), vector3(0.0f, 1.0f, 0.0f), angle += 1);
+  uniform.model = createModelMatrix(vector3(0.0f, 0.0f, 0.0f), vector3(0.45f*2, 0.5f*2, 0.5f*2), vector3(0.0f, 1.0f, 0.0f), angle += 1);
   uniform.view = createViewMatrix();
   uniform.projection = createProjectionMatrix(wWidth, wHeight);
   uniform.viewport = createViewportMatrix(wWidth, wHeight);
-  renderBuffer(vertexes, normals, uniform, wWidth, wHeight);
+  renderBuffer(vertexes, originals, normals, uniform, wWidth, wHeight);
 }
 

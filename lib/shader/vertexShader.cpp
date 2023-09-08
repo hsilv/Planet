@@ -11,6 +11,7 @@ Vertex vertexShader(const Vertex &vertex, const Uniforms &uniforms)
     return Vertex{
         vector3(r.x / r.w, r.y / r.w, r.z * r.x),
         normal,
+        vertex.originals,
         vertex.color};
 }
 

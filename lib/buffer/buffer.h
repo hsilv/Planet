@@ -13,6 +13,7 @@
 #include <stevesch-MathVec.h>
 #include "vertexShader.h"
 #include "assembly.h"
+#include "FastNoise.h"
 using stevesch::vector3;
 using stevesch::matrix4;
 using stevesch::vector4;
@@ -21,12 +22,13 @@ extern Color clearColor;
 extern Color currentColor;
 extern TFT_eSPI tft;
 extern TFT_eSprite spr;
+extern FastNoiseLite noise;
 
 struct Face {
   std::vector<std::array<int, 3>> vertices;
 };
 void clearBuffer();
-void renderBuffer(const std::vector<vector3>& vertices,const std::vector<vector3>& normals, Uniforms &u, int wWidth, int wHeight);
+void renderBuffer(const std::vector<vector3>& vertices, const std::vector<vector3>& textures, const std::vector<vector3>& normals, Uniforms &u, int wWidth, int wHeight);
 void initBuffer();
 void pointBuffer(const Fragment &f);
 bool checkFrag(const vector3 &f);

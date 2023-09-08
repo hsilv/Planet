@@ -1,12 +1,19 @@
 #include "triangle.h"
 
 vector3 L = {0.0f, 0.0f, -5.0f};
+float persistence = 0.25;
+float octaves = 4;
+uint16_t gridWidth = 160;
+uint16_t gridHeight = 120;
 
-void triangle(Vertex a, Vertex b, Vertex c, void (*func)(const Fragment &), bool (*check)(const vector3 &))
+void triangle(Vertex a, Vertex b, Vertex c, void (*func)(const Fragment &), bool (*check)(const vector3 &), std::vector<FastNoiseLite> noises)
 {
     vector3 A = a.position;
     vector3 B = b.position;
     vector3 C = c.position;
+    vector3 TA = vector3(a.originals.x * gridWidth, a.originals.y * gridHeight, 0);
+    vector3 TB = vector3(b.originals.x * gridWidth, b.originals.y * gridHeight, 0);
+    vector3 TC = vector3(c.originals.x * gridWidth, c.originals.y * gridHeight, 0);
 
     int minX = std::min(std::min(A.x, B.x), C.x);
     int minY = std::min(std::min(A.y, B.y), C.y);
@@ -28,13 +35,30 @@ void triangle(Vertex a, Vertex b, Vertex c, void (*func)(const Fragment &), bool
                 bar.y <= 1 && bar.y >= 0 &&
                 bar.z <= 1 && bar.z >= 0)
             {
+                float u = TA.x * bar.x + TB.x * bar.y + TC.x * bar.z;
+                float v = bar.x * TA.y + bar.y * TB.y + bar.z * TC.y;
+
                 vector3 normal = vector3(a.normal * bar.x + b.normal * bar.y + c.normal * bar.z);
                 normal = normal.normalize();
                 float intensity = normal.dot(L);
                 P.z = a.position.z * bar.x + b.position.z * bar.y + c.position.z * bar.z;
                 if (!(intensity < 0))
                 {
-                    Color color = a.color * bar.x + b.color * bar.y + c.color * bar.z;
+                    /* Color color = a.color * bar.x + b.color * bar.y + c.color * bar.z; */
+                    Color color;
+                    /* Serial.printf("x: %lf, y: %lf, barx: %lf, bary: %lf, id: %i \n", TA.x, TB.x, TC.x, u, id); */
+                    float noiseVal = noises[0].GetNoise(u * 35, v * 35);
+                    if (noiseVal >= 0)
+                    {
+                        color = Color(0, 115, 0);
+                        Color sand = Color(227, 177, 91);
+                        float beachIndex = (1 + noises[1].GetNoise(u * 35, v * 35));
+                        color = sand * beachIndex + color * (1.0 - beachIndex);
+                    }
+                    else
+                    {
+                        color = Color(0, 0, 255);
+                    }
                     color = color * intensity;
                     func(Fragment{P, color});
                 }

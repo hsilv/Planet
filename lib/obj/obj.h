@@ -11,6 +11,6 @@
 
 using stevesch::vector3;
 
-bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::vector<vector3> &out_normals);
+bool loadOBJ(const std::string &path, std::vector<vector3> &out_vertices, std::vector<vector3> &out_normals, std::vector<vector3> &out_text);
 
 #endif

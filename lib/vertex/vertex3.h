@@ -14,6 +14,7 @@ struct Vertex3 {
 struct Vertex {
     vector3 position;
     vector3 normal;
+    vector3 originals;
     Color color;
 };
 
