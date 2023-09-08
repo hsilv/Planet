@@ -51,14 +51,17 @@ void triangle(Vertex a, Vertex b, Vertex c, void (*func)(const Fragment &), bool
                     if (noiseVal >= 0)
                     {
                         color = Color(0, 115, 0);
-                        Color sand = Color(227, 177, 91);
+                        Color sand = Color(128, 99, 50);
                         float beachIndex = (1 + noises[1].GetNoise(u * 35, v * 35));
                         color = sand * beachIndex + color * (1.0 - beachIndex);
                     }
                     else
                     {
-                        color = Color(0, 0, 255);
+                        color = Color(0, 0, 128);
                     }
+                    float cloudVal = (1 + noises[2].GetNoise(u*15, v*15)) * 1.2;
+                    Color cloud = Color(76, 76, 76);
+                    color = color + cloud * cloudVal;
                     color = color * intensity;
                     func(Fragment{P, color});
                 }

@@ -62,6 +62,7 @@ void renderBuffer(const std::vector<vector3> &vertices, const std::vector<vector
 void initBuffer()
 {
     long terrainSeed = random(0, 2550);
+    long cloudSeed = random(0, 2550);
     tft.init();
     tft.setRotation(1);
     tft.fillScreen(TFT_BLACK);
@@ -94,6 +95,20 @@ void initBuffer()
     noise2.SetSeed(terrainSeed);
     noise2.SetFractalGain(0.5);
     noises.push_back(noise2);
+    FastNoiseLite noise3;
+    noise3.SetNoiseType(FastNoiseLite::NoiseType_Value);
+    noise3.SetFractalType(FastNoiseLite::FractalType_DomainWarpProgressive);
+    noise3.SetFractalOctaves(8);
+    noise3.SetFractalLacunarity(2.50f);
+    noise3.SetFractalGain(0.30f);
+    noise3.SetDomainWarpType(FastNoiseLite::DomainWarpType_BasicGrid);
+    noise3.SetDomainWarpAmp(60.00f);
+    noise3.SetFrequency(0.015);
+    noise3.SetSeed(cloudSeed);
+    noises.push_back(noise3);
+
+    Serial.printf("Seed de nubes: %i \n", cloudSeed);
+    Serial.printf("Seed de terreno: %i \n", terrainSeed);
 
     for (int i = 0; i < zbuffer.size(); ++i)
     {
